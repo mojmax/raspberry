@@ -1,4 +1,4 @@
-package it.moj.raspi.devices;
+package devices;
 
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 

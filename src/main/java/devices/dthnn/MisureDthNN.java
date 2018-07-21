@@ -1,4 +1,4 @@
-package it.moj.raspi.devices.dhtnn;
+package devices.dthnn;
 
 public class MisureDthNN {
 	private double temp = 0.0;

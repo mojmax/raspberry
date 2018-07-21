@@ -1,4 +1,4 @@
-package it.moj.raspi.devices.dhtnn;
+package devices.dthnn;
 
 import com.pi4j.component.ObserveableComponentBase;
 import com.pi4j.io.gpio.GpioController;

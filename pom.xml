@@ -5,12 +5,17 @@
 	<artifactId>it.moj.raspi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Led</name>
+	
+  
 	<description>Blinking Led</description>
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<raspberryip>192.168.1.72</raspberryip>
 		<raspberryfolder>~</raspberryfolder>
+	  <maven.compiler.source>1.8</maven.compiler.source>
+     <maven.compiler.target>1.8</maven.compiler.target>
+  
 	</properties>
 	<repositories>
 		<repository>

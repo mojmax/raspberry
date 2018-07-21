@@ -1,8 +1,8 @@
 package it.moj.raspi;
 
-import it.moj.raspi.devices.dhtnn.DhtNN;
-import it.moj.raspi.devices.dhtnn.MisureDthNN;
-import it.moj.raspi.devices.dhtnn.NameDhtNN;
+import devices.dthnn.DhtNN;
+import devices.dthnn.MisureDthNN;
+import devices.dthnn.NameDhtNN;
 
 /**
  * 
