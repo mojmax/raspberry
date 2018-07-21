@@ -10,7 +10,7 @@ import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
-public class DhtNN extends ObserveableComponentBase {
+public abstract class DhtNN extends ObserveableComponentBase {
 
 	private int validSample = 0;
 	private static final int TOTAL_NUM_SAMPLES = 83;
@@ -18,10 +18,11 @@ public class DhtNN extends ObserveableComponentBase {
 
 	private PinState currState;
 	private PinState lastState;
-	// private int[] states = new int[1000];
+	
 	private static final Pin DEFAULT_PIN = RaspiPin.GPIO_07;
 
-	private int dht11RhInt, dht11RhDec, dht11TempInt, dht11TempDec, dht11Check = 0;
+	protected int dhtNNRhInt, dhtNNRhDec, dhtNNTempInt, dhtNNTempDec, dhtNNCheck = 0;
+	
 	private GpioPinDigitalMultipurpose dht11Pin;
 
 	public DhtNN() {
@@ -35,8 +36,8 @@ public class DhtNN extends ObserveableComponentBase {
 		final GpioController gpio = GpioFactory.getInstance();
 		dht11Pin = gpio.provisionDigitalMultipurposePin(rPin, PinMode.DIGITAL_INPUT, PinPullResistance.PULL_UP);
 	}
-
-	public MisureDthNN getRhTempValues() {
+	protected abstract void calculateRhTemp();
+	public MisureDhtNN getRhTempValues() {
 		takeSamples();
 		printSamples();
 		return convertSampleToMisure();
@@ -76,9 +77,9 @@ public class DhtNN extends ObserveableComponentBase {
 		}
 	}
 
-	private MisureDthNN convertSampleToMisure() {
-		MisureDthNN mis = new MisureDthNN();
-		dht11Check = dht11TempInt = dht11TempDec = dht11RhInt = dht11RhDec = 0;
+	private MisureDhtNN convertSampleToMisure() {
+		MisureDhtNN mis = new MisureDhtNN();
+		dhtNNCheck = dhtNNTempInt = dhtNNTempDec = dhtNNRhInt = dhtNNRhDec = 0;
 		if (samples.length != TOTAL_NUM_SAMPLES) {
 			System.out.println("Sample ERROR  - nume samples " + samples.length);
 			return mis;
@@ -91,17 +92,17 @@ public class DhtNN extends ObserveableComponentBase {
 
 		calculateRhTemp();
 
-		System.out.println("dht11RhInt     " + dht11RhInt);
-		System.out.println("dht11RhDec    " + dht11RhDec);
-		System.out.println("dht11TempInt   " + dht11TempInt);
-		System.out.println("dht11TempDec    " + dht11TempDec);
-		System.out.println("dht11Check    " + dht11Check);
+		System.out.println("dht11RhInt     " + dhtNNRhInt);
+		System.out.println("dht11RhDec    " + dhtNNRhDec);
+		System.out.println("dht11TempInt   " + dhtNNTempInt);
+		System.out.println("dht11TempDec    " + dhtNNTempDec);
+		System.out.println("dht11Check    " + dhtNNCheck);
 
 		if (checkParity()) {
 			mis.setRh(
-					Double.parseDouble(new Integer(dht11RhInt).toString() + "." + new Integer(dht11RhDec).toString()));
+					Double.parseDouble(new Integer(dhtNNRhInt).toString() + "." + new Integer(dhtNNRhDec).toString()));
 			mis.setTemp(Double
-					.parseDouble(new Integer(dht11TempInt).toString() + "." + new Integer(dht11TempDec).toString()));
+					.parseDouble(new Integer(dhtNNTempInt).toString() + "." + new Integer(dhtNNTempDec).toString()));
 			System.out.println("check Ok ");
 		} else {
 			System.out.println("check ERROR ");
@@ -110,32 +111,10 @@ public class DhtNN extends ObserveableComponentBase {
 		return mis;
 	}
 
-	private void calculateRhTemp() {
-		if (getName().equals(NameDhtNN.DHT11.getName())) {
-			dht11Check = dht11TempInt = dht11TempDec = dht11RhInt = dht11RhDec = 0;
-
-			dht11RhInt = samples[3].bitValue << 7 | samples[5].bitValue << 6 | samples[7].bitValue << 5
-					| samples[9].bitValue << 4 | samples[11].bitValue << 3 | samples[13].bitValue << 2
-					| samples[15].bitValue << 1 | samples[17].bitValue;
-			dht11RhDec = samples[19].bitValue << 7 | samples[21].bitValue << 6 | samples[23].bitValue << 5
-					| samples[25].bitValue << 4 | samples[27].bitValue << 3 | samples[29].bitValue << 2
-					| samples[31].bitValue << 1 | samples[33].bitValue;
-			dht11TempInt = samples[35].bitValue << 7 | samples[37].bitValue << 6 | samples[39].bitValue << 5
-					| samples[41].bitValue << 4 | samples[43].bitValue << 3 | samples[45].bitValue << 2
-					| samples[47].bitValue << 1 | samples[49].bitValue;
-			dht11TempDec = samples[51].bitValue << 7 | samples[53].bitValue << 6 | samples[55].bitValue << 5
-					| samples[57].bitValue << 4 | samples[59].bitValue << 3 | samples[61].bitValue << 2
-					| samples[63].bitValue << 1 | samples[65].bitValue;
-			dht11Check = samples[67].bitValue << 7 | samples[69].bitValue << 6 | samples[71].bitValue << 5
-					| samples[73].bitValue << 4 | samples[75].bitValue << 3 | samples[77].bitValue << 2
-					| samples[79].bitValue << 1 | samples[81].bitValue;
-		}
-
-	}
-
+	 
 	private boolean checkParity() {
 		if (getName().equals(NameDhtNN.DHT11.getName()))
-			return dht11Check == ((dht11RhInt + dht11RhDec + dht11TempInt + dht11TempDec) & 0xFF);
+			return dhtNNCheck == ((dhtNNRhInt + dhtNNRhDec + dhtNNTempInt + dhtNNTempDec) & 0xFF);
 		else
 			return false;
 	}

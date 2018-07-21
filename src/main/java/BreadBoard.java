@@ -1,7 +1,7 @@
 
 
-import devices.dthnn.DhtNN;
-import devices.dthnn.MisureDthNN;
+import devices.dthnn.Dht11;
+import devices.dthnn.MisureDhtNN;
 import devices.dthnn.NameDhtNN;
 
 /**
@@ -15,9 +15,9 @@ import devices.dthnn.NameDhtNN;
 public class BreadBoard {
 	
 	public static void main(final String ars[]) throws Exception {
-		DhtNN dht = new DhtNN();
+		Dht11 dht = new Dht11();
 		dht.setName(NameDhtNN.DHT11.getName());
-		MisureDthNN mis;
+		MisureDhtNN mis;
 
 		for (int i = 0; i < 3; i++) {
 			Thread.sleep(3000);
