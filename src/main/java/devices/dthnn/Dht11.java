@@ -5,10 +5,12 @@ public class Dht11 extends DhtNN {
 
 	public Dht11() {
 		super(tbeDht11Time);
+		setName("Dht11");
 	}
 	
 	public Dht11(int ipin) {
 		super(ipin,tbeDht11Time);
+		setName("Dht11");
 	}
 	
 	

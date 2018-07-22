@@ -5,14 +5,15 @@ public class Dht22 extends DhtNN {
 	protected int dhtNNRhInt_256, dhtNNRhDec_16, dhtNNRhDec_0, dhtNNTempInt_4096, dhtNNTempInt_256, dhtNNTempDec_16, dhtNNTempDec_0, sign= 0;
 	public Dht22() {
 		super(tbeDht22Time);
+		setName("Dht11");
 	}
 	
 	public Dht22(int ipin) {
 		super(ipin,tbeDht22Time);
+		super.setName("Dht22");
 	}
 	
 	protected void calculateRhTemp(MisureDhtNN mis) {
-		
 			
 			dhtNNRhInt_256 		= validSamples[4]  << 3 | validSamples[5]  << 2 | validSamples[6]  << 1 | validSamples[7]  ;
 			dhtNNRhDec_16 		= validSamples[8] << 3  | validSamples[9] << 2  | validSamples[10] << 1 | validSamples[11] ; 

@@ -21,6 +21,7 @@ public abstract class DhtNN extends ObserveableComponentBase {
 	private PinState currState;
 	private PinState lastState;
 	private static final Pin DEFAULT_PIN = RaspiPin.GPIO_07;
+	private String name;
 
 	private Pin pin = DEFAULT_PIN;
 
@@ -54,6 +55,12 @@ public abstract class DhtNN extends ObserveableComponentBase {
 	}
 
 	protected abstract void calculateRhTemp(MisureDhtNN mis);
+	public String getName() {
+		return this.name;
+	};
+	public void setName(String name) {
+		this.name=name;
+	};
 
 	public MisureDhtNN getRhTempValues() {
 		takeSamples();
