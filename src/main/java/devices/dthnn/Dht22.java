@@ -1,11 +1,14 @@
 package devices.dthnn;
 
 public class Dht22 extends DhtNN {
+	
 	private static final long tbeDht22Time = 18000000;
+	
 	protected int dhtNNRhInt_256, dhtNNRhDec_16, dhtNNRhDec_0, dhtNNTempInt_4096, dhtNNTempInt_256, dhtNNTempDec_16, dhtNNTempDec_0, sign= 0;
+	
 	public Dht22() {
 		super(tbeDht22Time);
-		setName("Dht11");
+		setName("Dht22");
 	}
 	
 	public Dht22(int ipin) {
@@ -24,7 +27,7 @@ public class Dht22 extends DhtNN {
 			dhtNNTempDec_0 		= validSamples[28] << 3 | validSamples[29] << 2 | validSamples[30] << 1 | validSamples[31];
 			sign = validSamples[16] * -1;
 			if (checkParity()) {
-				mis.setRh(new Double(dhtNNRhInt_256*256 + dhtNNTempDec_16*16 + dhtNNRhDec_0)/10) ;
+				mis.setRh(new Double(dhtNNRhInt_256*256 + dhtNNRhDec_16*16 + dhtNNRhDec_0)/10) ;
 				mis.setTemp(new Double(dhtNNTempInt_256*256 + dhtNNTempDec_16*16 + dhtNNTempDec_0)/10);
 			}  else {
 				mis.setRh(0);
