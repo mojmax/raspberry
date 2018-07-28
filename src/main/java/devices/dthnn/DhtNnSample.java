@@ -2,20 +2,20 @@ package devices.dthnn;
 
 import com.pi4j.io.gpio.PinState;
 
-public class SampleDhtNN {
+public class DhtNnSample {
 
 	private static int seq = 0;
 	private final int id = seq++;
 
 	public static void setSeq(int seq) {
-		SampleDhtNN.seq = seq;
+		DhtNnSample.seq = seq;
 	}
 
 	long durationNanosec;
 	int bitValue = 0;
 	PinState pinState;
 
-	public SampleDhtNN(long elapsedTime, PinState pinState) {
+	public DhtNnSample(long elapsedTime, PinState pinState) {
 
 		this.durationNanosec = elapsedTime;
 		// assign the value of the current bit

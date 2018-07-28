@@ -1,6 +1,6 @@
 package devices.dthnn;
 
-public class MisureDhtNN {
+public class DhtNnValues {
 	private double temp = 0.0;
 	private double rh = 0.0;
 

@@ -1,5 +1,7 @@
 package devices.dthnn;
 
+import java.util.concurrent.TimeUnit;
+
 import com.pi4j.component.ObserveableComponentBase;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
@@ -10,18 +12,21 @@ import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
-public abstract class DhtNN extends ObserveableComponentBase {
-
+public abstract class DhtNn extends ObserveableComponentBase implements Runnable {
+	
+	protected static final long msSleepDht22Time = 5000;
+	public DhtNnValues mis;
 	private int totValidSample = 0;
 	private static final int TOTAL_NUM_SAMPLES = 87;
 	private static final int FORTY_SAMPLES = 40;
-	SampleDhtNN[] samples;
-	int[] validSamples;
+	private DhtNnSample[] samples;
+	protected int[] validSamples;
 	private long tbeTime;
 	private PinState currState;
 	private PinState lastState;
 	private static final Pin DEFAULT_PIN = RaspiPin.GPIO_07;
 	private String name;
+	private long msSleepTime = 5000; 
 
 	private Pin pin = DEFAULT_PIN;
 
@@ -35,17 +40,28 @@ public abstract class DhtNN extends ObserveableComponentBase {
 
 	private GpioPinDigitalMultipurpose dht11Pin;
 
-	private DhtNN() {
+	private DhtNn() {
+		setPin(pin);
+		msSleepTime = msSleepDht22Time;
+		
+	}
+	public DhtNn(long msSleepTime) {
+		this();
+		this.msSleepTime = msSleepTime;
+	}
+	public DhtNn(long msSleepTime, long tbeTime) {
+		this();
+		this.msSleepTime = msSleepTime;
+		this.tbeTime = tbeTime;
+	}
+	public DhtNn(int ipin,long msSleepTime, long tbeTime) {
+		this.msSleepTime = msSleepTime;
+		this.tbeTime = tbeTime;
+		Pin pin = RaspiPin.getPinByAddress(ipin);
 		setPin(pin);
 	}
-
-	public DhtNN(long tbeTime) {
-		this();
-		this.tbeTime = tbeTime;
-	}
-
-	public DhtNN(int ipin, long tbeTime) {
-		this.tbeTime = tbeTime;
+	public DhtNn(int ipin, long msSleepTime) {
+		this.msSleepTime = msSleepTime;
 		Pin pin = RaspiPin.getPinByAddress(ipin);
 		setPin(pin);
 	}
@@ -54,7 +70,7 @@ public abstract class DhtNN extends ObserveableComponentBase {
 		dht11Pin = gpio.provisionDigitalMultipurposePin(pin, PinMode.DIGITAL_INPUT);
 	}
 
-	protected abstract void calculateRhTemp(MisureDhtNN mis);
+	protected abstract void calculateRhTemp(DhtNnValues mis);
 	public String getName() {
 		return this.name;
 	};
@@ -62,7 +78,7 @@ public abstract class DhtNN extends ObserveableComponentBase {
 		this.name=name;
 	};
 
-	public MisureDhtNN getRhTempValues() {
+	public DhtNnValues getRhTempValues() {
 		takeSamples();
 		// printSamples();
 		return convertSampleToMisure();
@@ -71,14 +87,14 @@ public abstract class DhtNN extends ObserveableComponentBase {
 
 	private void printSamples() {
 		int i = 0;
-		for (SampleDhtNN s : samples) {
+		for (DhtNnSample s : samples) {
 			System.out.println("Sample[" + (i++) + "]" + s);
 		}
 	}
 
 	private void takeSamples() {
 		totValidSample = 0;
-		samples = new SampleDhtNN[TOTAL_NUM_SAMPLES];
+		samples = new DhtNnSample[TOTAL_NUM_SAMPLES];
 		validSamples = new int[FORTY_SAMPLES];
 		dht11Pin.setMode(PinMode.DIGITAL_OUTPUT);
 		lastState = PinState.LOW;
@@ -91,29 +107,35 @@ public abstract class DhtNN extends ObserveableComponentBase {
 		long currentTime = System.nanoTime();
 		long oldTime = currentTime;
 
-		SampleDhtNN.setSeq(0);
+		DhtNnSample.setSeq(0);
 		for (int i = 0; i < TOTAL_NUM_SAMPLES; i++) {
 			currState = takeNewState();
 
 			if (currState != null && (currState.isLow() || currState.isHigh())) {
 				currentTime = System.nanoTime();
-				samples[i] = new SampleDhtNN(currentTime - oldTime, currState);
+				samples[i] = new DhtNnSample(currentTime - oldTime, currState);
 			}
 			oldTime = currentTime;
 		}
-		System.out.println();
+		
 		int lastLowValidSample = 0;
 		for (int i = TOTAL_NUM_SAMPLES - 1; i >= 0; i--) {
 			if (samples[i] != null) {
-
-				lastLowValidSample = i;
-				i = -1;
+				if (samples[i].bitValue == 0) {
+					lastLowValidSample = i;
+					// 
+					i = -1;
+				}
 			}
 		}
+		printSamples();
+		System.out.println("lastLowValidSample "+lastLowValidSample);
 		if (lastLowValidSample > 1) {
 			for (int i = lastLowValidSample - 1, x = FORTY_SAMPLES - 1; i >= 0; i = i - 2) {
-				if (x > -1)
-					validSamples[x--] = samples[i].bitValue;
+				if (x > -1) {
+					if (samples[i] != null)  
+						validSamples[x--] = samples[i].bitValue;
+				}
 				totValidSample++;
 				if (totValidSample == FORTY_SAMPLES) {
 					i = -1;
@@ -122,8 +144,8 @@ public abstract class DhtNN extends ObserveableComponentBase {
 		}
 	}
 
-	private MisureDhtNN convertSampleToMisure() {
-		MisureDhtNN mis = null;
+	private DhtNnValues convertSampleToMisure() {
+		DhtNnValues mis = null;
 		dhtNNCheck = dhtNNTempInt = dhtNNTempDec = dhtNNRhInt = dhtNNRhDec = 0;
 		if (samples.length != TOTAL_NUM_SAMPLES) {
 			System.out.println("Sample ERROR  - nume samples " + samples.length);
@@ -134,7 +156,7 @@ public abstract class DhtNN extends ObserveableComponentBase {
 			System.out.println("valid Sample ERROR  " + totValidSample);
 			return mis;
 		}
-		mis = new MisureDhtNN();
+		mis = new DhtNnValues();
 
 		takeByte();
 		calculateRhTemp(mis);
@@ -182,8 +204,7 @@ public abstract class DhtNN extends ObserveableComponentBase {
 		return check;
 
 	}
-
-	private PinState takeNewState() {
+	private PinState takeNewStateOld() {
 		PinState state;
 		int maxSample = 0;
 		do {
@@ -196,18 +217,55 @@ public abstract class DhtNN extends ObserveableComponentBase {
 		lastState = state;
 		if (maxSample >= 500)
 			return null;
-		// validSample++;
+//		validSample++;
 		return state;
 
 	}
 
+	private PinState takeNewState() {
+		PinState state;
+		
+		// current time + 200 Micro Sec
+		
+		long timeLimit = System.nanoTime() ;
+		//System.out.println("Wait from  :" + timeLimit);
+		timeLimit += 400000; 
+		//System.out.println("Wait until  :" + timeLimit);
+		boolean exitLoop = false;
+		
+		do {
+			state = dht11Pin.getState();
+		} while (state == lastState && !(exitLoop = (System.nanoTime() > timeLimit ? true : false)));
+		
+		lastState = state;
+		
+		if (exitLoop) {
+			return null;
+		} else {
+			return state;
+		}
+
+	}
+	
 	private void waitNanosecond(long nano) {
 		long waitUntil = System.nanoTime() + nano;
 		while (waitUntil > System.nanoTime()) {
 		}
 	}
-
-	public SampleDhtNN[] getStats() {
+	
+	public DhtNnSample[] getStats() {
 		return samples;
+	}
+	@Override
+	public void run() {
+		while (true) {
+			try {
+				Thread.sleep(msSleepTime);
+			} catch (InterruptedException e) {
+			}
+			mis = getRhTempValues();
+			System.out.println(getName() +" Misurati   " + mis);
+		}
+		
 	}
 }

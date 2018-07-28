@@ -1,6 +1,6 @@
 package devices.dthnn;
 
-public class Dht11 extends DhtNN {
+public class Dht11 extends DhtNn {
 	private static final long tbeDht11Time = 20000000;
 
 	public Dht11() {
@@ -15,7 +15,7 @@ public class Dht11 extends DhtNN {
 	
 	
 	@Override
-	protected void calculateRhTemp(MisureDhtNN mis) {
+	protected void calculateRhTemp(DhtNnValues mis) {
 		// TODO Auto-generated method stub
 		if (checkParity()) {
 			mis.setRh(
