@@ -1,30 +1,32 @@
 package devices.dthnn;
 
 public class Dht11 extends DhtNn {
-	private static final long tbeDht11Time = 20000000;
-
+	private static final long tbeDht11Time = 22000000;
+											 										
 	public Dht11() {
-		super(tbeDht11Time);
+		super(msSleepDhtNnTime,  tbeDht11Time);
 		setName("Dht11");
 	}
 	
 	public Dht11(int ipin) {
-		super(ipin,tbeDht11Time);
+		super(ipin, msSleepDhtNnTime,  tbeDht11Time);
+		
 		setName("Dht11");
 	}
 	
 	
 	@Override
-	protected void calculateRhTemp(DhtNnValues mis) {
+	protected DhtNnValues calculateRhTemp(DhtNnValues mis) {
 		// TODO Auto-generated method stub
 		if (checkParity()) {
-			mis.setRh(
-					Double.parseDouble(new Integer(dhtNNRhInt).toString() + "." + new Integer(dhtNNRhDec).toString()));
-			mis.setTemp(Double
-					.parseDouble(new Integer(dhtNNTempInt).toString() + "." + new Integer(dhtNNTempDec).toString()));
-			System.out.println("check Ok ");
+			
+			mis.setRh( new Double(dhtNNRhInt) );
+			mis.setTemp(new Double(dhtNNTempInt));
+			return mis;
+			
 		} else {
-			System.out.println("check ERROR ");
+			return null;
+			
 		}
 	}
 

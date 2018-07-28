@@ -7,31 +7,31 @@ public class Dht22 extends DhtNn {
 	protected int dhtNNRhInt_256, dhtNNRhDec_16, dhtNNRhDec_0, dhtNNTempInt_4096, dhtNNTempInt_256, dhtNNTempDec_16, dhtNNTempDec_0, sign= 0;
 	
 	public Dht22() {
-		super(msSleepDht22Time,  tbeDht22Time);
+		super(msSleepDhtNnTime,  tbeDht22Time);
 		setName("Dht22");
 	}
 	
 	public Dht22(int ipin) {
-		super(ipin,tbeDht22Time);
-		super.setName("Dht22");
+		super(ipin, msSleepDhtNnTime, tbeDht22Time);
+		setName("Dht22");
 	}
 	
-	protected void calculateRhTemp(DhtNnValues mis) {
+	protected DhtNnValues calculateRhTemp(DhtNnValues mis) {
 			
-			dhtNNRhInt_256 		= validSamples[4]  << 3 | validSamples[5]  << 2 | validSamples[6]  << 1 | validSamples[7]  ;
-			dhtNNRhDec_16 		= validSamples[8] << 3  | validSamples[9] << 2  | validSamples[10] << 1 | validSamples[11] ; 
-			dhtNNRhDec_0 		= validSamples[12] << 3 | validSamples[13] << 2 | validSamples[14] << 1 | validSamples[15];
-			dhtNNTempInt_4096 	= validSamples[16] << 3 | validSamples[17] << 2 | validSamples[18] << 1 | validSamples[19] ;
-			dhtNNTempInt_256 	= validSamples[20] << 3 | validSamples[21] << 2 | validSamples[22] << 1 | validSamples[23];
-			dhtNNTempDec_16 	= validSamples[24] << 3 | validSamples[25] << 2 | validSamples[26] << 1 | validSamples[27] ;
-			dhtNNTempDec_0 		= validSamples[28] << 3 | validSamples[29] << 2 | validSamples[30] << 1 | validSamples[31];
-			sign = validSamples[16] * -1;
+			dhtNNRhInt_256 		= validSamples.get(4)  << 3 | validSamples.get(5)  << 2 | validSamples.get(6)  << 1 | validSamples.get(7)  ;
+			dhtNNRhDec_16 		= validSamples.get(8) << 3  | validSamples.get(9) << 2  | validSamples.get(10) << 1 | validSamples.get(11) ; 
+			dhtNNRhDec_0 		= validSamples.get(12) << 3 | validSamples.get(13) << 2 | validSamples.get(14) << 1 | validSamples.get(15);
+			dhtNNTempInt_4096 	= validSamples.get(16) << 3 | validSamples.get(17) << 2 | validSamples.get(18) << 1 | validSamples.get(19);
+			dhtNNTempInt_256 	= validSamples.get(20) << 3 | validSamples.get(21) << 2 | validSamples.get(22) << 1 | validSamples.get(23);
+			dhtNNTempDec_16 	= validSamples.get(24) << 3 | validSamples.get(25) << 2 | validSamples.get(26) << 1 | validSamples.get(27);
+			dhtNNTempDec_0 		= validSamples.get(28) << 3 | validSamples.get(29) << 2 | validSamples.get(30) << 1 | validSamples.get(31);
+			sign = validSamples.get(16) * -1;
 			if (checkParity()) {
 				mis.setRh(new Double(dhtNNRhInt_256*256 + dhtNNRhDec_16*16 + dhtNNRhDec_0)/10) ;
 				mis.setTemp(new Double(dhtNNTempInt_256*256 + dhtNNTempDec_16*16 + dhtNNTempDec_0)/10);
+				return mis;
 			}  else {
-				mis.setRh(0);
-				mis.setTemp(0);
+				return null;
 			}
 	}
 	

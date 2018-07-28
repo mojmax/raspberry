@@ -25,6 +25,9 @@ public class DhtNnSample {
 		}
 
 	}
+	public int getId() {
+		return id;
+	}
 
 	public String toString() {
 		return " id : " + id + " captured at level " + pinState.getValue() + " bit" + bitValue + " duration "
