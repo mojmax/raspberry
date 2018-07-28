@@ -215,6 +215,10 @@ public abstract class DhtNn extends ObserveableComponentBase implements Runnable
 		return samples;
 	}
 	@Override
+	public String toString() {
+		return "RH%"+  (mis==null?0:mis.getRh()) + " Temp " + (mis==null?0: mis.getTemp()); 
+	}
+	@Override
 	public void run() {
 		while (true) {
 			try {

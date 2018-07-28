@@ -15,12 +15,12 @@ public class Lcd16x2 {
     public Lcd16x2() {
 	   lcd = new GpioLcdDisplay(LCD_ROWS,    // number of row supported by LCD
 			   					LCD_COLUMNS,       // number of columns supported by LCD
-			   					RaspiPin.GPIO_29,  // LCD RS pin
-			   					RaspiPin.GPIO_27,  // LCD strobe pin
-			   					RaspiPin.GPIO_21,  // LCD data bit 1
-			   					RaspiPin.GPIO_22,  // LCD data bit 2
-			   					RaspiPin.GPIO_23,  // LCD data bit 3
-			   					RaspiPin.GPIO_24); // LCD data bit 4 
+			   					RaspiPin.GPIO_11,  // LCD RS pin
+			   					RaspiPin.GPIO_10,  // LCD strobe pin
+			   					RaspiPin.GPIO_06,  // LCD data bit 1 D4
+			   					RaspiPin.GPIO_05,  // LCD data bit 2 D5
+			   					RaspiPin.GPIO_04,  // LCD data bit 3 D6
+			   					RaspiPin.GPIO_01); // LCD data bit 4 D7
    }
    public void clear() {
 	   lcd.clear();
