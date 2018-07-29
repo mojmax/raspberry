@@ -74,7 +74,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>BreadBoard</mainClass>
+							<mainClass>BoardDht11Dht22Lcd1602</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

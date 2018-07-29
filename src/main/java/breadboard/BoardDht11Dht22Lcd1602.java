@@ -1,3 +1,4 @@
+package breadboard;
 
 import java.sql.Time;
 import java.util.Date;
@@ -21,7 +22,7 @@ import devices.dthnn.DhtNnValues;
  * @author Massimo Mojetta 04/02/2018
  */
 
-public class BreadBoard {
+public class BoardDht11Dht22Lcd1602 {
 
 	public static void main(final String ars[]) throws Exception {
 		GpioController gpio = GpioFactory.getInstance();
