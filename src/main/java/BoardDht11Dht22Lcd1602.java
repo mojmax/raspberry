@@ -1,21 +1,14 @@
 
 
-import java.sql.Time;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
 import com.pi4j.component.lcd.LCDTextAlignment;
-import com.pi4j.component.lcd.impl.GpioLcdDisplay;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.Pin;
-import com.pi4j.io.gpio.RaspiPin;
 
 import devices.Lcd16x2;
-import devices.Led;
 import devices.dthnn.Dht11;
 import devices.dthnn.Dht22;
-import devices.dthnn.DhtNnValues;
+
+
 
 /**
  * 
@@ -38,7 +31,7 @@ public class BoardDht11Dht22Lcd1602 {
 		lcd.write(0, "Dth22 Rh% + Temp" ,LCDTextAlignment.ALIGN_LEFT);
 		lcd.write(1, "Dth11 Rh% + Temp" ,LCDTextAlignment.ALIGN_LEFT);
 		while(true) {
-			Thread.sleep(10000);
+			Thread.sleep(1000);
 //			dht.getRhTempValues();
 //			dht11.getRhTempValues();
 			System.out.println("Leggo ?" +dht);
