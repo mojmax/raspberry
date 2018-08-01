@@ -34,6 +34,11 @@ public class Button {
 		button.setName(string);
 		
 	}
+	public void setDebounce(int debounce) {
+		button.setDebounce(debounce);
+		
+	}
+	
 	public String getName() {
 		return button.getName();
 	}

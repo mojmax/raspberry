@@ -10,23 +10,15 @@ public class Dht11 extends DhtNn {
 	
 	public Dht11(int ipin) {
 		super(ipin, msSleepDhtNnTime,  tbeDht11Time);
-		
 		setName("Dht11");
 	}
 	
-	
 	@Override
-	protected DhtNnValues calculateRhTemp(DhtNnValues mis) {
-		// TODO Auto-generated method stub
+	protected void calculateRhTemp() {
 		if (checkParity()) {
 			
-			mis.setRh( new Double(dhtNNRhInt) );
-			mis.setTemp(new Double(dhtNNTempInt));
-			return mis;
-			
-		} else {
-			return null;
-			
+			getMis().setRh( new Double(dhtNNRhInt) );
+			getMis().setTemp(new Double(dhtNNTempInt));
 		}
 	}
 

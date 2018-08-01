@@ -15,8 +15,8 @@ public class Dht22 extends DhtNn {
 		super(ipin, msSleepDhtNnTime, tbeDht22Time);
 		setName("Dht22");
 	}
-	
-	protected DhtNnValues calculateRhTemp(DhtNnValues mis) {
+	@Override
+	protected void calculateRhTemp() {
 			
 			dhtNNRhInt_256 		= validSamples.get(4)  << 3 | validSamples.get(5)  << 2 | validSamples.get(6)  << 1 | validSamples.get(7)  ;
 			dhtNNRhDec_16 		= validSamples.get(8) << 3  | validSamples.get(9) << 2  | validSamples.get(10) << 1 | validSamples.get(11) ; 
@@ -27,11 +27,9 @@ public class Dht22 extends DhtNn {
 			dhtNNTempDec_0 		= validSamples.get(28) << 3 | validSamples.get(29) << 2 | validSamples.get(30) << 1 | validSamples.get(31);
 			sign = validSamples.get(16) * -1;
 			if (checkParity()) {
-				mis.setRh(new Double(dhtNNRhInt_256*256 + dhtNNRhDec_16*16 + dhtNNRhDec_0)/10) ;
-				mis.setTemp(new Double(dhtNNTempInt_256*256 + dhtNNTempDec_16*16 + dhtNNTempDec_0)/10);
-				return mis;
-			}  else {
-				return null;
+			
+				getMis().setRh(new Double(dhtNNRhInt_256*256 + dhtNNRhDec_16*16 + dhtNNRhDec_0)/10) ;
+				getMis().setTemp(new Double(dhtNNTempInt_256*256 + dhtNNTempDec_16*16 + dhtNNTempDec_0)/10);
 			}
 	}
 	

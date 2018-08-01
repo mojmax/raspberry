@@ -40,22 +40,12 @@ public class BoardDht11Dht22Lcd1602 {
 //			dht.getRhTempValues();
 //			dht11.getRhTempValues();
 			System.out.println("Leggo ?" +dht);
-			if(dht.mis != null) {
-				dht.mis.getTemp();
-				dht.mis.getRh();
-				dht.getRhTempValues();
-				dht.mis.getTemp();
-				dht.mis.getRh();
-				String str22 = "Rh%" +dht.mis.getRh()+" C°"+dht.mis.getTemp(); 
+			if(dht.getMis() != null) {
+				String str22 = "Rh%" +dht.getMis().getRh()+" "+dht.getMis().getTemp(); 
 				lcd.write(0, str22 ,LCDTextAlignment.ALIGN_LEFT);
 			}
-			if(dht11.mis != null) {
-				dht11.mis.getTemp();
-				dht11.mis.getRh();
-				dht11.getRhTempValues();
-				dht11.mis.getTemp();
-				dht11.mis.getRh();
-				String str11 = "Rh%" +dht11.mis.getRh()+" C°"+dht11.mis.getTemp(); 
+			if(dht11.getMis() != null) {
+				String str11 = "Rh%" +dht11.getMis().getRh()+" "+dht11.getMis().getTemp(); 
 				lcd.write(1, str11 ,LCDTextAlignment.ALIGN_LEFT);
 			}
 //			System.out.println(dht11);

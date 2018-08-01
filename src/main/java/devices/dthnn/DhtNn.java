@@ -3,7 +3,6 @@ package devices.dthnn;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import com.pi4j.component.ObserveableComponentBase;
 import com.pi4j.io.gpio.GpioController;
@@ -11,15 +10,15 @@ import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalMultipurpose;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinMode;
-import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
 public abstract class DhtNn extends ObserveableComponentBase implements Runnable {
 	
 	protected static final long msSleepDhtNnTime = 5000;
-	public DhtNnValues mis;
-	private int totValidSample = 0;
+	private DhtNnValues mis = new DhtNnValues() ;
+
+	
 	private static final int TOTAL_NUM_SAMPLES = 87;
 	private static final int FORTY_SAMPLES = 40;
 	private List<DhtNnSample> samples;
@@ -30,7 +29,7 @@ public abstract class DhtNn extends ObserveableComponentBase implements Runnable
 	private static final Pin DEFAULT_PIN = RaspiPin.GPIO_07;
 	private String name;
 	private long msSleepTime = 5000; 
-
+	
 	private Pin pin = DEFAULT_PIN;
 
 	private final GpioController gpio;
@@ -73,7 +72,7 @@ public abstract class DhtNn extends ObserveableComponentBase implements Runnable
 		dht11Pin = gpio.provisionDigitalMultipurposePin(pin, PinMode.DIGITAL_INPUT);
 	}
 
-	protected abstract DhtNnValues calculateRhTemp(DhtNnValues mis);
+	protected abstract void calculateRhTemp();
 	public String getName() {
 		return this.name;
 	};
@@ -81,10 +80,10 @@ public abstract class DhtNn extends ObserveableComponentBase implements Runnable
 		this.name=name;
 	};
 
-	public DhtNnValues getRhTempValues() {
+	private void takeNewValues() {
 		takeSamples();
 	//	printSamples();
-		return convertSampleToMisure();
+		convertSampleToMisure();
 	}
 
 	private void printSamples() {
@@ -100,7 +99,7 @@ public abstract class DhtNn extends ObserveableComponentBase implements Runnable
 	}
 
 	private void takeSamples() {
-		totValidSample = 0;
+	
 		samples = new ArrayList<DhtNnSample>(TOTAL_NUM_SAMPLES);
 		validSamples = new ArrayList<Integer>(FORTY_SAMPLES);
 		dht11Pin.setMode(PinMode.DIGITAL_OUTPUT);
@@ -141,16 +140,14 @@ public abstract class DhtNn extends ObserveableComponentBase implements Runnable
 
 	}
 
-	private DhtNnValues convertSampleToMisure() {
-		DhtNnValues mis = null;
+	private void convertSampleToMisure() {
+//		DhtNnValues mis = null;
 		dhtNNCheck = dhtNNTempInt = dhtNNTempDec = dhtNNRhInt = dhtNNRhDec = 0;
 		if (validSamples.size() != FORTY_SAMPLES) {
-			return mis;
+			return ;
 		}
-		mis = new DhtNnValues();
-
 		takeByte();
-		return calculateRhTemp(mis);
+		calculateRhTemp();
 	}
 
 	private void takeByte() {
@@ -216,7 +213,7 @@ public abstract class DhtNn extends ObserveableComponentBase implements Runnable
 	}
 	@Override
 	public String toString() {
-		return "RH%"+  (mis==null?0:mis.getRh()) + " Temp " + (mis==null?0: mis.getTemp()); 
+		return "RH%"+  (getMis()==null?0:getMis().getRh()) + " Temp " + (getMis()==null?0: getMis().getTemp()); 
 	}
 	@Override
 	public void run() {
@@ -225,10 +222,18 @@ public abstract class DhtNn extends ObserveableComponentBase implements Runnable
 				Thread.sleep(msSleepTime);
 			} catch (InterruptedException e) {
 			}
-			mis = getRhTempValues();
+			takeNewValues();
 			if ( mis != null )
 				System.out.println(getName() +" Misurati   " + mis);
 		}
 		
+	}
+	
+	public synchronized DhtNnValues getMis() {
+		return mis;
+	}
+
+	public synchronized void setMis(DhtNnValues mis) {
+		this.mis = mis;
 	}
 }
