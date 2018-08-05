@@ -52,10 +52,6 @@ public class BoardDht11Dht22Lcd1602Button {
 		
 		lcd.clear();
 		
-		Thread t = new Thread(dht);
-		t.start();
-		
-		
 //		Thread t11 = new Thread(dht11);
 //		t11.start();
 //		
@@ -69,7 +65,7 @@ public class BoardDht11Dht22Lcd1602Button {
 	public static void print(DhtNn dht, Lcd16x2 lcd) {
 		if(dht.getMis() != null) {
 			String str = String.format("Rh %.1f%% T %.1f ",dht.getMis().getRh(),dht.getMis().getTemp());
-			lcd.clear(); 
+		 
 			lcd.write(0, str ,LCDTextAlignment.ALIGN_LEFT);
 		}
 		String name = dht.getMis().getScale().getName() + "       ";

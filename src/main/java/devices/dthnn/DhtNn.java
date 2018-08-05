@@ -29,7 +29,7 @@ public abstract class DhtNn extends ObserveableComponentBase implements Runnable
 	private static final Pin DEFAULT_PIN = RaspiPin.GPIO_07;
 	private String name;
 	private long msSleepTime = 5000; 
-	
+	private Thread t;
 	private Pin pin = DEFAULT_PIN;
 
 	private final GpioController gpio;
@@ -50,22 +50,30 @@ public abstract class DhtNn extends ObserveableComponentBase implements Runnable
 	public DhtNn(long msSleepTime) {
 		this();
 		this.msSleepTime = msSleepTime;
+		autoStartThread();
 	}
 	public DhtNn(long msSleepTime, long tbeTime) {
 		this();
 		this.msSleepTime = msSleepTime;
 		this.tbeTime = tbeTime;
+		autoStartThread();
 	}
 	public DhtNn(int ipin,long msSleepTime, long tbeTime) {
 		this.msSleepTime = msSleepTime;
 		this.tbeTime = tbeTime;
 		Pin pin = RaspiPin.getPinByAddress(ipin);
 		setPin(pin);
+	
 	}
 	public DhtNn(int ipin, long msSleepTime) {
 		this.msSleepTime = msSleepTime;
 		Pin pin = RaspiPin.getPinByAddress(ipin);
 		setPin(pin);
+	
+	}
+	private void autoStartThread() {
+		t = new Thread(this);
+		t.start();
 	}
 
 	private void setPin(Pin pin) {
